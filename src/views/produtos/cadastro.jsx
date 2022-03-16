@@ -6,7 +6,11 @@ const estadoInicial = {
     sku : '',
     descricao: '',
     preco : 0.00,
-    fornecedor: ''
+    fornecedor: '', 
+    // variável que controla o alert
+    sucesso: false,
+    //variável de erros
+    errors : []
 }
 
 class CadastroProduto extends React.Component{
@@ -29,6 +33,7 @@ class CadastroProduto extends React.Component{
     }
 
     onSubmit = (event) =>{
+        
         const produto = {
             nome : this.state.nome,
             sku : this.state.sku,
@@ -37,8 +42,24 @@ class CadastroProduto extends React.Component{
             fornecedor: this.state.fornecedor
         }
 
-        console.log("Salvo com sucesso");
-        this.service.salvar(produto);
+       
+
+        try{
+            this.service.salvar(produto);
+            console.log("C3");
+            this.limpaCampos();
+            this.setState({
+                sucesso:true
+            })
+        }catch(erro){
+           const errors =  erro.errors
+           this.setState({
+               errors: errors
+           })
+        }
+
+        
+        
         
     }
 
@@ -54,6 +75,34 @@ class CadastroProduto extends React.Component{
                     Cadastro de Produto
                 </div>
                 <div className="card-body">
+                    {
+                        this.state.sucesso?
+                        
+                            <div class="alert alert-dismissible alert-success">
+                                <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
+                                <strong>Bem feito!</strong> Cadastro Realizado com sucesso.
+                            </div> 
+                        
+                        : <></>
+
+                    }
+
+                    {
+                        this.state.errors.length > 0 && 
+                            this.state.errors.map(msg => {
+                                return (
+                            
+                                    <div class="alert alert-dismissible alert-danger">
+                                        <button type="button" className="btn-close" data-bs-dismiss="alert"></button>
+                                        <strong>Erro</strong> {msg}
+                                    </div> 
+                                );
+                            })   
+                    }
+
+                   
+
+                    
                     <div className="row">
                         <div className="col-md-6">
                             <div className="form-group">
